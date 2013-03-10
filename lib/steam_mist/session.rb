@@ -1,3 +1,14 @@
+# We're placing these here so that if someone wants to only use this part of
+# the library, they don't have to require the entire thing.
+require 'uri'
+require 'multi_json'
+require 'forwardable'
+require 'steam_mist/version'
+require 'steam_mist/connector'
+require 'steam_mist/connectors'
+require 'steam_mist/request_uri'
+require 'steam_mist/pseudo_interface'
+
 module SteamMist
 
 	# The session is used as a starting point for connecting to the Steam API.

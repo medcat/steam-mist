@@ -44,7 +44,17 @@ module SteamMist
       # @param new_arguments [Hash] the arguments to be added.
       # @return [PseudoMethod] a {PseudoMethod} with the new arguments.
       def with_arguments(new_arguments)
-        dup.tap { |d| d.arguments = @arguments.dup.merge(new_arguments) }
+        dup.with_arguments! new_arguments
+      end
+
+      # This merges the current arguments with the passed arguments.  This
+      # modifies the instance it is called on.
+      #
+      # @param new_arguments [Hash] the arguments to merge with.
+      # @return [self]
+      def with_arguments!(new_arguments)
+        self.arguments.merge! new_arguments
+        self
       end
 
       # This sets the version.
@@ -53,7 +63,17 @@ module SteamMist
       # @return [PseudoMethod] a {PseudoMethod} with the version set to the
       #   new version.
       def with_version(new_version)
-        dup.tap { |d| d.version = new_version }
+        dup.with_version!(new_version)
+      end
+
+      # Sets the version of the current method.  This modifies the instance it
+      # is called on.
+      #
+      # @param new_version [Numeric] the version to set to.
+      # @return [self]
+      def with_version!(new_version)
+        self.version = new_version
+        self
       end
 
       # Open up a connector for use.  This is cached with this method.
