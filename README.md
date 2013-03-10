@@ -1,4 +1,4 @@
-# SteamMist [![Build Status](https://travis-ci.org/redjazz96/steam-mist.png?branch=master)](https://travis-ci.org/redjazz96/steam-mist)
+# SteamMist [![Build Status](https://travis-ci.org/redjazz96/steam-mist.png?branch=master)](https://travis-ci.org/redjazz96/steam-mist) [![Code Climate](https://codeclimate.com/github/redjazz96/steam-mist.png)](https://codeclimate.com/github/redjazz96/steam-mist)
 Steam Mist (for the lack of a better name) is a library for interfacing with
 the Steam Web API.  It handles the HTTP requests for you while providing a
 nice API for you to use.
