@@ -1,0 +1,62 @@
+require 'open-uri'
+
+module SteamMist
+
+  # @abstract Subclass and implement {#[]} to create a connector usable by 
+  #   SteamMist.
+  class Connector
+
+    # This is the data that the connector received from Steam.  It may be null
+    # if the connector is lazy (in terms of when it grabs data).
+    #
+    # @return [Hash, nil]
+    attr_reader :data
+
+    # This is the request that the connector used to grab information from the
+    # steam api.
+    #
+    # @return [RequestUri]
+    attr_reader :request_uri
+
+    # Whether or not the connector has made the request to the API.
+    #
+    # @return [Boolean]
+    attr_reader :made_request
+
+    # This initializes the connector.
+    #
+    # @param request_uri [RequestUri] the request uri to connect to.
+    def initialize(request_uri)
+      @request_uri = request_uri
+    end
+
+    # Retrieve data from #data.  This is normally used to force the connector
+    # (if it's lazy) to grab data.
+    #
+    # @param _ [Object] the key for data access.
+    # @raise NotImplementedError if the subclass hasn't implemented the method.
+    # @return [Object]
+    def [](_)
+      raise NotImplementedError
+    end
+
+    # If the connector is lazy, this should force the connector to make the
+    # request to Steam.
+    #
+    # @return [Hash] the data from the request to steam.
+    def force_request!
+      # It may or may not work with a psudo-io object...
+      @data = MultiJson.load(request, :symbolize_keys => true)
+    end
+
+    protected
+
+    # The request used for retrieving information from Steam.
+    #
+    # @return [IO]
+    def request
+      @_request ||= open(request_uri)
+    end
+    
+  end
+end
