@@ -14,6 +14,6 @@ describe SteamMist::RequestUri do
   end
 
   it "should format the right string" do
-    request_uri.to_s.should eq "http://api.steamcommunity.com/ISomeInterface/SomeMethod/v0001?"
+    request_uri.to_s.should eq "http://api.steampowered.com/ISomeInterface/SomeMethod/v0001?"
   end
 end
