@@ -10,10 +10,10 @@ describe SteamMist::Rcon::Packet do
   end
 
   it "should properly deserialize data from raw" do
-  	packet = described_class.from_raw "\x15\0\0\0\x05\0\0\0\x02\0\0\0hello world\0\0"
-  	packet.id.should be 5
-  	packet.type.should be 2
-  	packet.body.should eq "hello world"
+    packet = described_class.from_raw "\x15\0\0\0\x05\0\0\0\x02\0\0\0hello world\0\0"
+    packet.id.should be 5
+    packet.type.should be 2
+    packet.body.should eq "hello world"
   end
 
   it "should properly deserialize data from a stream" do
