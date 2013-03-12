@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.2.1)
-    multi_json (1.6.1)
+    oj (2.0.9)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
       rspec-expectations (~> 2.13.0)
@@ -16,5 +16,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  multi_json
+  oj
   rspec

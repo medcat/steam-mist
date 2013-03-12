@@ -30,4 +30,8 @@ describe SteamMist::PseudoInterface::PseudoMethod do
   it "should use default arguments" do
     pseudo_method.request_uri.arguments.should include(:something => "value")
   end
+
+  it "should give a connector with caching" do
+    pseudo_method.with_caching("some_file").get.should respond_to :cache
+  end
 end

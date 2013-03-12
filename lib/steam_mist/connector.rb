@@ -25,11 +25,17 @@ module SteamMist
     # @return [Boolean]
     attr_reader :made_request
 
+    # This is a hash of headers that will be sent upon request.
+    #
+    # @return [Hash]
+    attr_reader :headers
+
     # This initializes the connector.
     #
     # @param request_uri [RequestUri] the request uri to connect to.
     def initialize(request_uri)
       @request_uri = request_uri
+      @headers = {}
     end
 
     # Retrieve data from #data.  This is normally used to force the connector
@@ -57,7 +63,7 @@ module SteamMist
     # @return [Hash] the data from the request to steam.
     def force_request!
       # It may or may not work with a psudo-io object...
-      @data = MultiJson.load(request, :symbolize_keys => true)
+      @data = Oj.load(request, :mode => :strict)
     end
 
     protected
@@ -66,7 +72,7 @@ module SteamMist
     #
     # @return [IO]
     def request
-      @_request ||= open(request_uri)
+      @_request ||= open(request_uri, headers)
     end
     
   end

@@ -22,6 +22,7 @@ module SteamMist
       private
 
       def ensure_data
+        puts caller.join("\n")
       	@data ||= force_request!
       end
 

@@ -7,7 +7,7 @@ module SteamMist
       # The version of the method.  Used for {RequestUri}.
       #
       # @return [Numeric] the version.
-      attr_accessor :version
+      attr_reader :version
 
       # The name of the method.
       #
@@ -22,7 +22,12 @@ module SteamMist
       # The arguments passed along with the method.
       #
       # @return [Hash] the arguments.
-      attr_accessor :arguments
+      attr_reader :arguments
+
+      # Whether or not the connector is going to implement caching.
+      #
+      # @return [Boolean]
+      attr_reader :cached
 
       # Initialize the method.
       #
@@ -37,6 +42,7 @@ module SteamMist
         @name        = method
         @version     = version
         @arguments   = {}
+        @cached      = false
       end
 
       # This merges the passed hash with the arguments.
@@ -48,13 +54,14 @@ module SteamMist
       end
 
       # This merges the current arguments with the passed arguments.  This
-      # modifies the instance it is called on.
+      # modifies the instance it is called on.   Invalidates the current
+      # connector.
       #
       # @param new_arguments [Hash] the arguments to merge with.
       # @return [self]
       def with_arguments!(new_arguments)
-        self.arguments.merge! new_arguments
-        self
+        @arguments.merge!(new_arguments)
+        reset_connector
       end
 
       # This sets the version.
@@ -67,20 +74,66 @@ module SteamMist
       end
 
       # Sets the version of the current method.  This modifies the instance it
-      # is called on.
+      # is called on.  Invalidates the current connector.
       #
       # @param new_version [Numeric] the version to set to.
       # @return [self]
       def with_version!(new_version)
-        self.version = new_version
-        self
+        @version = new_version
+        reset_connector
+      end
+
+      # This makes sure the connector is set up to cache its results.  Does not
+      # modify the connector until #{get} is called.
+      #
+      # @param path [String] the path of the cache file.
+      # @param type [Numeric] the type of caching to be performed.
+      # @return [PseudoMethod] a {PseudoMethod} with caching.
+      def with_caching(path, type = Cache::HTTP_CACHE)
+        dup.with_caching!(path, type)
+      end
+
+      # This modifies the current method to make sure the connector is set up
+      # to cache its results.  Invalidates the current connector.
+      #
+      # @param path [String] the path of the cache file.
+      # @param type [Numeric] the type of caching to be performed.
+      # @return [self]
+      def with_caching!(path, type = Cache::HTTP_CACHE)
+        @cached = [path, type]
+        reset_connector
+      end
+
+      # This makes sure the connector is set up to not cache its results.
+      #
+      # @return [PseudoMethod] a {PseudoMethod} without caching.
+      def without_caching
+        dup.without_caching!
+      end
+
+      # This modifies the current method to make sure the connector is set up
+      # to not cache its results.  Invalidates the current connector.
+      #
+      # @return [self]
+      def without_caching!
+        @cached = false
+        reset_connector
       end
 
       # Open up a connector for use.  This is cached with this method.
       #
       # @return [Connector] the connector that will grab data.
       def get
-        @_connector ||= interface.session.connector.new(request_uri)
+        @_connector ||= begin
+          connector = interface.session.connector.new(request_uri)
+
+          if @cached
+            connector.extend Cache
+            connector.enable_caching *@cached
+          end
+
+          connector
+        end
       end
 
       # Turns the method name into the name the Steam Web API uses.  It turns
@@ -118,6 +171,18 @@ module SteamMist
       # @return [String]
       def inspect
         "#<SteamMist::PseudoInterface::PseudoMethod #{interface.name}/#{name}>"
+      end
+
+      private
+
+      # This is used to show that the connector is out of date; it forces the
+      # method to use a seperate connector.
+      #
+      # @return [self]
+      def reset_connector
+        @_connector = nil
+        @_request_uri = nil
+        self
       end
 
     end

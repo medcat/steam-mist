@@ -18,5 +18,5 @@ Gem::Specification.new do |s|
   An interface for the Steam API.
 desc
 
-  s.add_dependency "multi_json", '~> 1.6'
+  s.add_dependency "oj", '~> 1.6'
 end
