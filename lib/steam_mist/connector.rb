@@ -2,9 +2,11 @@ require 'open-uri'
 
 module SteamMist
 
-  # @abstract Subclass and implement {#[]} to create a connector usable by 
-  #   SteamMist.
+  # @abstract Subclass and implement {#[], #each} to create a connector usable 
+  #   by SteamMist.
   class Connector
+
+    include Enumerable
 
     # This is the data that the connector received from Steam.  It may be null
     # if the connector is lazy (in terms of when it grabs data).
@@ -37,6 +39,15 @@ module SteamMist
     # @raise NotImplementedError if the subclass hasn't implemented the method.
     # @return [Object]
     def [](_)
+      raise NotImplementedError
+    end
+
+    # This loops through the data.  It should be implented for enumerable
+    # access.
+    #
+    # @raise NotImplementedError if the subclass hasn't implemented the method.
+    # @return [void]
+    def each
       raise NotImplementedError
     end
 
