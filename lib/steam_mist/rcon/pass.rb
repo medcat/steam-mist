@@ -1,5 +1,7 @@
 module SteamMist
   class Rcon
+
+    # This basically handles sending and receiving packets.
     class Pass
         
       # The packet factory that should be used when creating packets.  This
@@ -69,6 +71,8 @@ module SteamMist
 
         rescue TimeoutError; end
 
+        response_packets.pop(2)
+
         if response_packets.length == 1
           response_packets[0]
         else
@@ -97,6 +101,9 @@ module SteamMist
         response.id == packet.id
       end
 
+      # This closes the connection by calling {Listener#close}.
+      #
+      # @return [void]
       def close
         listener.close
       end

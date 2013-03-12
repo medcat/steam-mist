@@ -1,3 +1,4 @@
+require 'forwardable'
 require 'steam_mist/rcon/pass'
 require 'steam_mist/rcon/packet'
 require 'steam_mist/rcon/listener'

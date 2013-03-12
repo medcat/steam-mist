@@ -11,18 +11,20 @@ module SteamMist
     	#
     	# @return [Object]
       def [](name)
-        ensure_data[name]
+        data[name]
       end
 
       # This provides access to {#each} on the data.
       #
       # @see {Hash#each}.
-      def_delegator :ensure_data, :each
+      def_delegator :data, :each
 
-      private
-
-      def ensure_data
-        puts caller.join("\n")
+      # This makes sure that the data was requested before it was used by
+      # checking if data is full (and if it isn't, fill it with the data from
+      # {#force_request!}).
+      #
+      # @return [Hash] the data.
+      def data
       	@data ||= force_request!
       end
 

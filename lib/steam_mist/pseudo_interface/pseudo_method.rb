@@ -84,7 +84,7 @@ module SteamMist
       end
 
       # This makes sure the connector is set up to cache its results.  Does not
-      # modify the connector until #{get} is called.
+      # modify the connector until {#get} is called.
       #
       # @param path [String] the path of the cache file.
       # @param type [Numeric] the type of caching to be performed.

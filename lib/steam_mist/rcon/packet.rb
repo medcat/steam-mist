@@ -132,7 +132,7 @@ module SteamMist
 
       # This sets up the packet from a given hash.
       #
-      # @param [Hash] the data to map to the packet.
+      # @param data [Hash] the data to map to the packet.
       # @return [Packet]
       def self.from_hash(data)
         packet = Packet.new
