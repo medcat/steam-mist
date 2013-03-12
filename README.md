@@ -23,7 +23,7 @@ method.get.force_request! # => our json data
 
 ```Ruby
 rcon = SteamMist::Rcon.new("localhost")
-rcon.auth("password")
+rcon.auth("password") # => true
 rcon.send(:data => "echo hello") # =>
 	# [..., #<SteamMist::Rcon::Packet @body="hello\n", @type=0>, ...]
 rcon.close

@@ -94,7 +94,7 @@ module SteamMist
 
         response = on_packet
 
-        response
+        response.id == packet.id
       end
 
       def close
