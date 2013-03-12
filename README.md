@@ -13,8 +13,18 @@ interface = session.get_interface(:player_service)
 method = interface.get_method(:get_recently_played_games).with_version(1) \
 	.with_arguments(:steamid => "76561198025418738")
 
-method.request_uri # => http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=XXXXXXXXXXXXXXXXX&steamid=76561197960434622&format=json
+method.request_uri # => 
+	# http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/
+	# 	?key=XXXXXXXXXXXXXXXXX&steamid=76561197960434622&format=json
 # It's a URI object so #inspect doesn't include the quotes ;)
 method.get # => #<SteamMist::Connectors::LazyConnector>
 method.get.force_request! # => our json data
+```
+
+```Ruby
+rcon = SteamMist::Rcon.new("localhost")
+rcon.auth("password")
+rcon.send(:data => "echo hello") # =>
+	# [..., #<SteamMist::Rcon::Packet @body="hello\n", @type=0>, ...]
+rcon.close
 ```

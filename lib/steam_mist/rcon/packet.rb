@@ -91,6 +91,18 @@ module SteamMist
         (type == 0) and (body == "\x00\x01\x00\x00")
       end
 
+      # This loads the packet data from a hash.  Overwrites the contents of the
+      # packet.
+      #
+      # @param hash [Hash]
+      # @return [self]
+      def load!(hash)
+        self.id   = hash[:id]   || hash["id"]   || id
+        self.type = hash[:type] || hash["type"] || type
+        self.body = hash[:body] || hash["body"] || body
+        self
+      end
+
       alias :to_i :id
 
       # This takes a formatted string and turns it into a packet instance.
@@ -124,9 +136,7 @@ module SteamMist
       # @return [Packet]
       def self.from_hash(data)
         packet = Packet.new
-        packet.id   = data[:id]   || data["id"]   || packet.id
-        packet.type = data[:type] || data["type"] || packet.type
-        packet.body = data[:body] || data["body"] || packet.body
+        packet.load! data
 
         packet
       end

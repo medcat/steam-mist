@@ -29,7 +29,7 @@ module SteamMist
     # @param hash [Hash] the data to turn into a packet.
     # @return [Packet, Array<Packet>]
     def send(hash)
-      send_packet Packet.from_hash(hash)
+      send_packet packet_factory.create_packet.load!(hash)
     end
 
     # Pretty inspect
@@ -39,7 +39,8 @@ module SteamMist
       "#<SteamMist::Rcon>"
     end
 
-    def_delegators :@pass, :on_packet, :send_packet, :auth
+    def_delegators :@pass, :on_packet, :send_packet, :auth, :close, 
+      :packet_factory
 
   end
 end

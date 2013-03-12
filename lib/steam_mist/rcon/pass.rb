@@ -97,6 +97,10 @@ module SteamMist
         response
       end
 
+      def close
+        listener.close
+      end
+
       private
 
       # This makes sure the listener is connected before trying to perform an
