@@ -60,6 +60,14 @@ module SteamMist
       end
     end
 
+    # Some {#method_missing} magic.  Sorry @charliesome!
+    #
+    # @see {#get_method}
+    def method_missing(method, *args)
+      super if args.length > 0 or block_given?
+      get_method method
+    end
+
     # Pretty inspection.
     #
     # @return [String]

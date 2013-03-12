@@ -42,6 +42,14 @@ module SteamMist
       @_interfaces[interface] ||= PseudoInterface.new(self, interface)
     end
 
+    # Some {#method_missing} magic.  Sorry @charliesome!
+    #
+    # @see {#get_interface}
+    def method_missing(method, *args)
+      super if args.length > 0 or block_given?
+      get_interface method
+    end
+
     # pretty inspection
     def inspect
       "#<SteamMist::Session #{connector.inspect}>"

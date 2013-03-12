@@ -9,8 +9,7 @@ Have some code samples:
 require 'steam_mist'
 session = SteamMist::Session.new SteamMist::Connectors::LazyConnector
 session.default_arguments.merge! :key => "XXXXXXXXXXXXXXXXXXX", :format => :json
-interface = session.get_interface(:player_service)
-method = interface.get_method(:get_recently_played_games).with_version(1) \
+method = session.player_service.get_recently_played_games.with_version(1) \
 	.with_arguments(:steamid => "76561198025418738")
 
 method.request_uri # => 
@@ -18,7 +17,7 @@ method.request_uri # =>
 	# 	?key=XXXXXXXXXXXXXXXXX&steamid=76561197960434622&format=json
 # It's a URI object so #inspect doesn't include the quotes ;)
 method.get # => #<SteamMist::Connectors::LazyConnector>
-method.get.force_request! # => our json data
+method.get.data # => our json data
 ```
 
 ```Ruby
