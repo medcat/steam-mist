@@ -32,6 +32,13 @@ module SteamMist
         @number = @number + 1
         packet
       end
+
+      # Pretty inspect
+      #
+      # @return [String]
+      def inspect
+        "#<SteamMist::Rcon::PacketFactory #{@number}>"
+      end
       
     end
   end

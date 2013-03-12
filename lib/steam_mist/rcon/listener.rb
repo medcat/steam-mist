@@ -26,8 +26,9 @@ module SteamMist
       # @param ip [String] the ip address to bind to.
       # @param port [Numeric] the port to bind to.
       def initialize(ip, port)
-        @ip   = ip
-        @port = port
+        @ip     = ip
+        @port   = port
+        @closed = false
       end
 
       # Connect to the set port and ip address.
@@ -66,16 +67,48 @@ module SteamMist
       #
       # @yieldparam socket [TCPSocket]
       # @yieldreturn [void]
+      # @raise [TimeoutError] when select takes too long.
       # @return [void]
       def on_data
-        result = IO.select [connection], nil, nil, 10
+        return false if closed?
 
-        raise IOError, "timeout" unless result
+        result = IO.select [connection], [], [], 10
 
-        yield
+        raise TimeoutError, "timeout" unless result
+
+        yield connection
       end
 
-      def_delegator :@connection, :write
+      # Closes the connection.
+      #
+      # @return [void]
+      def close
+        unless @closed
+          @closed = true
+          connection.close
+        end
+      end
+
+      # This returns true or false depending on whether or not the connection
+      # is closed.
+      #
+      # @return [Boolean]
+      def closed?
+        @closed
+      end
+
+      # This passes the write through to the connection if the connection isn't
+      # closed.
+      def write(*args, &block)
+        return false if closed?
+
+        puts "writing #{args[0]}"
+
+        connection.write(*args, &block)
+      end
     end
+
+    # When {IO#select} takes too long to respond, this is raised.
+    class TimeoutError < IOError; end
   end
 end

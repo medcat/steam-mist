@@ -20,6 +20,10 @@ module SteamMist
       # Used for {#type}.  This is for the server sending back response data
       # for `EXECCOMMAND`.
       SERVERDATA_RESPONSE_VALUE = 0
+
+      # This matches the requests with their responses.
+      RESPONSE_MATCH = { SERVERDATA_AUTH        => SERVERDATA_AUTH_RESPONSE,
+                         SERVERDATA_EXECCOMMAND => SERVERDATA_RESPONSE_VALUE }
       
       # The id of the packet.  This is mainly used to match request packets
       # with their response.
@@ -41,8 +45,8 @@ module SteamMist
       #
       # @param id [Numeric] the id of the packet.
       def initialize(id=nil)
-        @id   = id
-        @type = -1
+        @id   = id || 0
+        @type = SERVERDATA_EXECCOMMAND
         @body = ""
       end
 
@@ -72,6 +76,23 @@ module SteamMist
         self.to_i <=> other.to_i
       end
 
+      # Shows whether or not the packet is empty.  The packet is not empty if
+      # the body contains more than "" and the type is not 2.
+      #
+      # @return [Boolean]
+      def empty?
+        body.empty? && (type != 2)
+      end
+
+      # This checks to see if it is SRCDS's weird packet response.
+      #
+      # @return [Boolean]
+      def weird?
+        (type == 0) and (body == "\x00\x01\x00\x00")
+      end
+
+      alias :to_i :id
+
       # This takes a formatted string and turns it into a packet instance.
       # This is mainly used for responses from the server.
       #
@@ -97,7 +118,19 @@ module SteamMist
         packet
       end
 
-      alias :to_i :id
+      # This sets up the packet from a given hash.
+      #
+      # @param [Hash] the data to map to the packet.
+      # @return [Packet]
+      def self.from_hash(data)
+        packet = Packet.new
+        packet.id   = data[:id]   || data["id"]   || packet.id
+        packet.type = data[:type] || data["type"] || packet.type
+        packet.body = data[:body] || data["body"] || packet.body
+
+        packet
+      end
+
     end
   end
 end

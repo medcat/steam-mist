@@ -1,64 +1,45 @@
-require 'steam_mist/rcon/packet_factory'
+require 'steam_mist/rcon/pass'
 require 'steam_mist/rcon/packet'
+require 'steam_mist/rcon/listener'
+require 'steam_mist/rcon/packet_factory'
 
 module SteamMist
 
   # This class provides RCON capabilities.
   class Rcon
 
-    # The packet factory that should be used when creating packets.  This
-    # factory is used to increment the ID number on sequential packets.
-    #
-    # @return [PacketFactory]
-    attr_reader :packet_factory
+    extend Forwardable
 
-    # The listener for sending and receiving data from the server.
+    # This is the class that handles reading and writing packets from the
+    # listener.
     #
-    # @return [Listener]
-    attr_reader :listener
+    # @return [Pass]
+    attr_reader :pass
 
     # Initialize.
     #
-    # @param ip [String] the IP address of the Rcon server.  Passed to 
-    #   Listener.
-    # @param port [Numeric] the port of the Rcon server.  Passed to Listener.
+    # @param ip [String] the IP to connect to.
+    # @param port [Numeric] the port to connect to.
     def initialize(ip, port = 27015)
-      @packet_factory = PacketFactory.new
-      @listener       = Listener.new ip, port
+      @pass = Pass.new(ip, port)
     end
 
-    # Retrieves the next packet from the stream.  If a block is given, it
-    # yields to that.
+    # This takes a hash, turns it into a packet, and sends it.
     #
-    # @yieldparam packet [Packet]
-    # @return [Packet]
-    def on_packet(&block)
-      listener.on_data do |con|
-        packet = Packet.from_stream con
-        
-        if block
-          block.call packet
-        end
-
-        packet
-      end
+    # @param hash [Hash] the data to turn into a packet.
+    # @return [Packet, Array<Packet>]
+    def send(hash)
+      send_packet Packet.from_hash(hash)
     end
 
-    # Sends the given packet to the server.
+    # Pretty inspect
     #
-    # @param packet [Packet]
-    # @return [void, Numeric]
-    def send_packet(packet)
-      listener.write packet.format
+    # @return [String]
+    def inspect
+      "#<SteamMist::Rcon>"
     end
 
-    private
-
-    # This makes sure the listener is connected before trying to perform an
-    # I/O operation.
-    def ensure_connected
-      listener.bind! unless listener.connector
-    end
+    def_delegators :@pass, :on_packet, :send_packet, :auth
 
   end
 end
