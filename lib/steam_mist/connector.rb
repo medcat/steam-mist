@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'time'
 
 module SteamMist
 
@@ -36,6 +37,7 @@ module SteamMist
     def initialize(request_uri)
       @request_uri = request_uri
       @headers = {}
+      @cache = false
     end
 
     # Retrieve data from #data.  This is normally used to force the connector
@@ -60,10 +62,33 @@ module SteamMist
     # If the connector is lazy, this should force the connector to make the
     # request to Steam.
     #
+    # @param force [Boolean] whether or not to force the request to
+    #   return fresh data.
     # @return [Hash] the data from the request to steam.
-    def force_request!
-      # It may or may not work with a psudo-io object...
-      @data = Oj.load(request, :mode => :strict)
+    def force_request!(force = false)
+      @data = with_cache(force) { Oj.load(request, :mode => :strict) }
+    end
+
+    # Enables caching on this connector.
+    #
+    # @param path [String] the path to the cache file.
+    # @return [Object]
+    def enable_caching(path)
+      @cache = path
+    end
+
+    # Whether or not this connector will cache the response.
+    #
+    # @return [Boolean]
+    def cache?
+      !!@cache
+    end
+
+    # Disables caching on this connector.
+    #
+    # @return [false]
+    def disable_caching
+      @cache = false
     end
 
     protected
@@ -73,6 +98,66 @@ module SteamMist
     # @return [IO]
     def request
       @_request ||= open(request_uri, headers)
+    end
+
+    # This handles caching the file, if it was requested.  Accepts a
+    # single block, which it yields to only when the cache data wasn't
+    # there.
+    #
+    # @return [Hash] the data.
+    def with_cache(force = false)
+      if cache
+        headers['If-Modified-Since'] = cache[:last_modified].utc.rfc2822
+      end
+
+      if force || !cache
+        write_cache yield
+      else
+        cache[:data]
+      end
+
+    rescue OpenURI::HTTPError => ex
+      if ex.message =~ /\A304 Not Modified\z/
+        return cache[:data]
+      else
+        raise ex
+      end
+    end
+
+    # Loads the data from the cache file.
+    #
+    # @param force [Boolean] whether or not to force loading from the
+    #   file again.
+    def cache(force = false)
+      return nil unless @cache && File.exists?(@cache)
+
+      @_cache = if force || !@_cache
+        File.open(@cache) { |f| Oj.load(f) }[request_uri.to_s]
+      else
+        @_cache
+      end
+    end
+
+    # Writes the cache data to the file, and forces a reload of the
+    # cache data in memory.
+    #
+    # @param data [Object] the data to store.
+    # @return [Object] the data stored.
+    def write_cache(data)
+      return data unless @cache
+      write_data = {
+        request_uri.to_s => {
+          :data => data.dup,
+          :last_modified => Time.now
+        }
+      }
+
+      File.open(@_path, "w") do |f|
+        f.write Oj.dump(write_data, :time_format => :ruby)
+      end
+
+      cache(true)
+      data
     end
     
   end

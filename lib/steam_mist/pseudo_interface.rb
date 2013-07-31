@@ -25,18 +25,15 @@ module SteamMist
     def initialize(session, interface_name)
       @name     = interface_name
       @session  = session
-      @_methods = {}
     end
 
-    # Grab a method from this interface.  All methods are cached, so successive
-    # calls with the same arguments return the same object.
+    # Grab a method from this interface.
     #
     # @param method_name [Symbol] the name of the method.
     # @param version [Numeric] the version of the method.
     # @return [PseudoMethod]
     def get_method(method_name, version=1)
-      @_methods["#{method_name}/#{version}"] ||= 
-        PseudoMethod.new(self, method_name, version)
+      PseudoMethod.new(self, method_name, version)
     end
 
     # Turns the interface name into the corresponding api name.  If the
@@ -64,8 +61,8 @@ module SteamMist
     #
     # @see {#get_method}
     def method_missing(method, *args)
-      super if args.length > 0 or block_given?
-      get_method method
+      super if args.length > 1 or block_given?
+      get_method method, *args
     end
 
     # Pretty inspection.

@@ -27,7 +27,7 @@ module SteamMist
     # Initialize.
     #
     # @param connector [Class] the connector (should be subclass of {Connector}).
-    def initialize(connector)
+    def initialize(connector = Connectors::LazyConnector)
       @connector   = connector
       @_interfaces = {}
       @default_arguments = {}
