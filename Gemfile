@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
-gemspec 
+gem 'oj', '~> 2.1'
+gem 'hashie', '~> 2.0'
 
 gem 'rspec'
