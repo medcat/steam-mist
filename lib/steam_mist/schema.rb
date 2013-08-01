@@ -1,6 +1,11 @@
+require 'set'
+require 'hashie/mash'
+
 module SteamMist
 
   # Handles the Schema for games.
+  #
+  # @todo More tests.
   class Schema
 
     # Initialize the schema.  The first argument is the application id,
@@ -9,7 +14,7 @@ module SteamMist
     # @param app_id [Numeric]
     # @param lang [String] the language the schema should return its
     #   results in.
-    def initialize(app_id, lang = nil)
+    def initialize(key, app_id, lang = nil)
       @app_id = app_id
       @session = Session.new
       @get_schema = @session.get_interface("IEconItems_#{app_id}").get_schema
@@ -21,16 +26,16 @@ module SteamMist
 
     # Returns a list of items in the schema.
     #
-    # @return [Item]
+    # @return [SortedSet<Item>]
     def items
-
+      @_items ||= data.items
     end
 
     # Retrieves the data from the request.
     #
-    # @return [Hash]
+    # @return [Hashie::Mash]
     def data
-      @get_schema.get.data
+      @_data ||= Hashie::Mash.new(@get_schema.get.data["result"])
     end
 
   end

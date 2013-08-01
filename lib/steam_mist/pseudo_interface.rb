@@ -1,4 +1,3 @@
-require 'steam_mist/pseudo_interface/cache'
 require 'steam_mist/pseudo_interface/pseudo_method'
 
 module SteamMist

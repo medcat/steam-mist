@@ -32,6 +32,6 @@ describe SteamMist::PseudoInterface::PseudoMethod do
   end
 
   it "should give a connector with caching" do
-    pseudo_method.with_caching("some_file").get.should respond_to :cache
+    expect(pseudo_method.with_caching("some_file").get).to be_cache
   end
 end

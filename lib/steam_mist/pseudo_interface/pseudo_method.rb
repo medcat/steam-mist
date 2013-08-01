@@ -89,7 +89,7 @@ module SteamMist
       # @param path [String] the path of the cache file.
       # @return [PseudoMethod] a {PseudoMethod} with caching.
       def with_caching(path)
-        dup.with_caching!(path, type)
+        dup.with_caching!(path)
       end
 
       # This modifies the current method to make sure the connector is set up
@@ -98,7 +98,7 @@ module SteamMist
       # @param path [String] the path of the cache file.
       # @return [self]
       def with_caching!(path)
-        @cached = [path, type]
+        @cached = path
         reset_connector
       end
 
@@ -126,7 +126,7 @@ module SteamMist
           connector = interface.session.connector.new(request_uri)
 
           if @cached
-            connector.enable_caching *@cached
+            connector.enable_caching @cached
           end
 
           connector

@@ -1,10 +1,12 @@
 require 'open-uri'
 require 'time'
+require 'fileutils'
 
 module SteamMist
 
   # @abstract Subclass and implement {#[], #each} to create a connector usable 
   #   by SteamMist.
+  # @todo Test caching.
   class Connector
 
     include Enumerable
@@ -129,7 +131,7 @@ module SteamMist
     # @param force [Boolean] whether or not to force loading from the
     #   file again.
     def cache(force = false)
-      return nil unless @cache && File.exists?(@cache)
+      return nil unless cache? && File.exists?(@cache)
 
       @_cache = if force || !@_cache
         File.open(@cache) { |f| Oj.load(f) }[request_uri.to_s]
@@ -144,15 +146,16 @@ module SteamMist
     # @param data [Object] the data to store.
     # @return [Object] the data stored.
     def write_cache(data)
-      return data unless @cache
+      return data unless cache?
       write_data = {
         request_uri.to_s => {
-          :data => data.dup,
+          :data => data,
           :last_modified => Time.now
         }
       }
 
-      File.open(@_path, "w") do |f|
+      FileUtils.mkdir_p File.dirname(@cache)
+      File.open(@cache, "w") do |f|
         f.write Oj.dump(write_data, :time_format => :ruby)
       end
 

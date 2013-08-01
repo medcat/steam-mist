@@ -1,8 +1,16 @@
+PATH
+  remote: .
+  specs:
+    steam_mist (1.2.3)
+      hashie (~> 2.0)
+      oj (~> 2.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.2.1)
-    oj (2.0.9)
+    hashie (2.0.5)
+    oj (2.1.4)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
       rspec-expectations (~> 2.13.0)
@@ -16,5 +24,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  oj
   rspec
+  steam_mist!

@@ -8,6 +8,7 @@ require 'steam_mist/connector'
 require 'steam_mist/connectors'
 require 'steam_mist/request_uri'
 require 'steam_mist/pseudo_interface'
+require 'steam_mist/schema'
 
 module SteamMist
 
