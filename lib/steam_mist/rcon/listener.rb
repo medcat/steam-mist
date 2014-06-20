@@ -101,9 +101,7 @@ module SteamMist
       # closed.
       def write(*args, &block)
         return false if closed?
-
-        puts "writing #{args[0]}"
-
+        
         connection.write(*args, &block)
       end
     end
